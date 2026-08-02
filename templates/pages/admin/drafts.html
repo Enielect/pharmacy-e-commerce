@@ -1,0 +1,34 @@
+{{define "content"}}
+<h1>Admin Dashboard</h1>
+<div class="admin-stats">
+    <div class="stat-card"><h3>{{.DraftCount}}</h3><p>Pending Drafts</p></div>
+    <div class="stat-card"><h3>{{.OrderCount}}</h3><p>Total Orders</p></div>
+</div>
+
+<h2>Product Drafts</h2>
+{{if .Drafts}}
+<table class="table">
+    <thead><tr><th>ID</th><th>Image</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>
+        {{range .Drafts}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td><img src="{{imageURL .ImageKey}}" alt="Draft" class="thumbnail"></td>
+            <td><span class="status-badge status-{{.Status}}">{{.Status}}</span></td>
+            <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
+            <td>
+                <a href="/admin/drafts/{{.ID}}" class="btn btn-primary btn-sm">Review</a>
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No drafts pending review.</p>
+{{end}}
+
+<div class="admin-nav">
+    <a href="/admin/inventory" class="btn btn-secondary">Manage Inventory</a>
+    <a href="/admin/orders" class="btn btn-secondary">Manage Orders</a>
+</div>
+{{end}}

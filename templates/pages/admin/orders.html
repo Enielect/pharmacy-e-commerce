@@ -1,0 +1,27 @@
+{{define "content"}}
+<h1>Order Management</h1>
+<div class="filter-bar">
+    <a href="/admin/orders" class="btn btn-sm {{if not .Filter}}btn-primary{{else}}btn-secondary{{end}}">All</a>
+    <a href="/admin/orders?status=pending_pharmacist_review" class="btn btn-sm {{if eq .Filter "pending_pharmacist_review"}}btn-primary{{else}}btn-secondary{{end}}">Pending Rx Review</a>
+    <a href="/admin/orders?status=paid" class="btn btn-sm {{if eq .Filter "paid"}}btn-primary{{else}}btn-secondary{{end}}">Paid</a>
+    <a href="/admin/orders?status=processing" class="btn btn-sm {{if eq .Filter "processing"}}btn-primary{{else}}btn-secondary{{end}}">Processing</a>
+</div>
+{{if .Orders}}
+<table class="table">
+    <thead><tr><th>Order #</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>
+        {{range .Orders}}
+        <tr>
+            <td>#{{.ID}}</td>
+            <td>₦{{centsToDollars .TotalCents}}</td>
+            <td><span class="status-badge status-{{.Status}}">{{.Status}}</span></td>
+            <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
+            <td><a href="/admin/orders/{{.ID}}" class="btn btn-secondary btn-sm">View</a></td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p>No orders found.</p>
+{{end}}
+{{end}}

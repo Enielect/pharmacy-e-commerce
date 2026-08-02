@@ -1,0 +1,17 @@
+{{define "pagination.html"}}
+{{if gt .Result.TotalPages 1}}
+<div class="pagination">
+    {{$current := .Result.Page}}
+    {{$pages := .Result.TotalPages}}
+    {{if gt $current 1}}
+    <a href="?page={{sub $current 1}}{{if .Category}}&category={{.Category}}{{end}}{{if .Query}}&q={{.Query}}{{end}}" class="page-link">&laquo; Prev</a>
+    {{end}}
+    {{range $i := seq 1 $pages}}
+    <a href="?page={{$i}}{{if $.Category}}&category={{$.Category}}{{end}}{{if $.Query}}&q={{$.Query}}{{end}}" class="page-link {{if eq $i $current}}active{{end}}">{{$i}}</a>
+    {{end}}
+    {{if lt $current $pages}}
+    <a href="?page={{add $current 1}}{{if .Category}}&category={{.Category}}{{end}}{{if .Query}}&q={{.Query}}{{end}}" class="page-link">Next &raquo;</a>
+    {{end}}
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,19 @@
+# Binaries
+/pharmacy
+/seed
+/server
+DESIGN_DOCUMENT.md
+
+# Uploads
+/uploads/*
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

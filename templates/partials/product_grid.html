@@ -1,0 +1,10 @@
+{{define "product_grid.html"}}
+<div class="product-grid">
+    {{range .Result.Products}}
+    {{template "product_card.html" .}}
+    {{else}}
+    <p class="empty">No products found.</p>
+    {{end}}
+</div>
+{{template "pagination.html" .}}
+{{end}}

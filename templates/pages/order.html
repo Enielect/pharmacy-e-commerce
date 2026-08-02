@@ -1,0 +1,91 @@
+{{define "content"}}
+<h1>Order #{{.Order.ID}}</h1>
+<div class="order-detail">
+    <div class="order-info">
+        <p><strong>Status:</strong> <span class="status-badge status-{{.Order.Status}}">{{.Order.Status}}</span></p>
+        <p><strong>Total:</strong> ₦{{centsToDollars .Order.TotalCents}}</p>
+        <p><strong>Date:</strong> {{.Order.CreatedAt.Format "Jan 02, 2006 15:04 MST"}}</p>
+        <p><strong>Shipping:</strong> {{.Order.ShippingLine1}}, {{.Order.ShippingCity}}, {{.Order.ShippingState}}</p>
+    </div>
+
+    <h2>Items</h2>
+    <table class="table">
+        <thead>
+            <tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+            {{range .Items}}
+            <tr>
+                <td>{{.ProductNameSnapshot}}</td>
+                <td>₦{{centsToDollars .PriceCentsSnapshot}}</td>
+                <td>{{.Quantity}}</td>
+                <td>₦{{centsToDollars (mul .PriceCentsSnapshot .Quantity)}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+
+    {{if .Prescriptions}}
+    <h2>Prescriptions</h2>
+    {{range .Prescriptions}}
+    <div class="prescription-item">
+        <p>Status: <span class="status-badge status-{{.Status}}">{{.Status}}</span></p>
+        {{if .VerifiedAt}}
+        <p>Verified: {{.VerifiedAt.Format "Jan 02, 2006"}}</p>
+        {{end}}
+    </div>
+    {{end}}
+    {{end}}
+
+    {{if and (eq .Order.Status "pending_payment") (not .NeedsPrescription)}}
+    <form method="post" action="/checkout/pay/{{.Order.ID}}">
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+    </form>
+    {{end}}
+
+    {{if .NeedsPrescription}}
+    <div class="prescription-upload">
+        <h2>Upload Prescription</h2>
+        <p>This order contains items that require a prescription.</p>
+        <form method="post" action="/checkout/pay/{{.Order.ID}}">
+            <input type="hidden" name="prescription" value="1">
+            <p class="note">For now, click the button to simulate uploading your prescription.</p>
+            <button type="submit" class="btn btn-primary">Upload Prescription (Demo)</button>
+        </form>
+    </div>
+    {{end}}
+
+    {{if and .User (or (eq .User.Role "admin") (eq .User.Role "pharmacist"))}}
+    <div class="admin-order-actions">
+        <h2>Update Status</h2>
+        <form method="post" action="/admin/orders/{{.Order.ID}}/status" class="inline-form">
+            <select name="status" class="form-control">
+                <option value="pending_payment" {{if eq .Order.Status "pending_payment"}}selected{{end}}>Pending Payment</option>
+                <option value="paid" {{if eq .Order.Status "paid"}}selected{{end}}>Paid</option>
+                <option value="pending_pharmacist_review" {{if eq .Order.Status "pending_pharmacist_review"}}selected{{end}}>Pending Pharmacist Review</option>
+                <option value="processing" {{if eq .Order.Status "processing"}}selected{{end}}>Processing</option>
+                <option value="shipped" {{if eq .Order.Status "shipped"}}selected{{end}}>Shipped</option>
+                <option value="cancelled" {{if eq .Order.Status "cancelled"}}selected{{end}}>Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        </form>
+
+        {{if .Prescriptions}}
+        <h2>Verify Prescriptions</h2>
+        {{range .Prescriptions}}
+        {{if eq .Status "pending"}}
+        <div class="prescription-actions">
+            <form method="post" action="/admin/prescriptions/{{.ID}}/approve" class="inline-form">
+                <button type="submit" class="btn btn-success btn-sm">Approve</button>
+            </form>
+            <form method="post" action="/admin/prescriptions/{{.ID}}/reject" class="inline-form">
+                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+            </form>
+        </div>
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
+    {{end}}
+</div>
+{{end}}

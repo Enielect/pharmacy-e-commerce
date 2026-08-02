@@ -1,0 +1,41 @@
+{{define "content"}}
+<div class="product-detail">
+    <div class="product-detail-image">
+        <img src="{{imageURL .Product.PrimaryImageKey}}" alt="{{.Product.Name}}">
+        {{if .Product.RequiresPrescription}}
+        <div class="badge badge-rx">Requires Prescription</div>
+        {{end}}
+    </div>
+    <div class="product-detail-info">
+        <h1>{{.Product.Name}}</h1>
+        <p class="brand">{{.Product.Brand}}</p>
+        {{if .Product.NafdacRegNumber}}
+        <p class="nafdac">NAFDAC Reg: {{.Product.NafdacRegNumber}}</p>
+        {{end}}
+        <p class="active-ingredient">Active Ingredient: {{.Product.ActiveIngredient}}</p>
+        <p class="description">{{.Product.Description}}</p>
+
+        <h3>Available Variants</h3>
+        <div class="variant-list">
+            {{range .Product.Variants}}
+            <div class="variant-item">
+                <div class="variant-info">
+                    <strong>{{.Strength}} {{.PackSize}}</strong>
+                    <span class="price">₦{{centsToDollars .PriceCents}}</span>
+                    <span class="stock {{if le .StockQty 0}}out-of-stock{{end}}">
+                        {{if le .StockQty 0}}Out of Stock{{else}}{{.StockQty}} in stock{{end}}
+                    </span>
+                </div>
+                {{if gt .StockQty 0}}
+                <form method="post" action="/cart/add" class="add-to-cart-form">
+                    <input type="hidden" name="variant_id" value="{{.ID}}">
+                    <label>Qty: <input type="number" name="quantity" value="1" min="1" max="{{.StockQty}}" class="qty-input"></label>
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

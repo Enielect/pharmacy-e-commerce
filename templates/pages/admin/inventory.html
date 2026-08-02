@@ -1,0 +1,30 @@
+{{define "content"}}
+<h1>Inventory Management</h1>
+<table class="table">
+    <thead>
+        <tr><th>Product</th><th>Variant</th><th>SKU</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {{range $product := .Result.Products}}
+        {{range $product.Variants}}
+        <tr>
+            <td>{{$product.Name}}</td>
+            <td>{{.Strength}} {{.PackSize}}</td>
+            <td>{{.SKU}}</td>
+            <td>₦{{centsToDollars .PriceCents}}</td>
+            <td>{{.StockQty}}</td>
+            <td>
+                <form method="post" action="/admin/inventory/{{.ID}}" class="inline-form">
+                    <input type="number" name="price_cents" value="{{.PriceCents}}" class="form-control" style="width:80px">
+                    <input type="number" name="stock_qty" value="{{.StockQty}}" class="form-control" style="width:80px">
+                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                </form>
+            </td>
+        </tr>
+        {{end}}
+        {{else}}
+        <tr><td colspan="6">No products found.</td></tr>
+        {{end}}
+    </tbody>
+</table>
+{{end}}

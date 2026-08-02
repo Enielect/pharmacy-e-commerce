@@ -1,0 +1,19 @@
+{{define "product_card.html"}}
+<div class="product-card">
+    <a href="/products/{{.Slug}}">
+        <div class="product-card-image">
+            <img src="{{imageURL .PrimaryImageKey}}" alt="{{.Name}}">
+            {{if .RequiresPrescription}}
+            <span class="badge badge-rx">Rx Required</span>
+            {{end}}
+        </div>
+        <div class="product-card-body">
+            <h3>{{.Name}}</h3>
+            <p class="brand">{{.Brand}}</p>
+            {{if .Variants}}
+            <p class="price">From ₦{{centsToDollars (index .Variants 0).PriceCents}}</p>
+            {{end}}
+        </div>
+    </a>
+</div>
+{{end}}

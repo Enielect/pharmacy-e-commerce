@@ -1,0 +1,44 @@
+{{define "cart_drawer.html"}}
+{{if .Cart.Items}}
+<div class="cart-items">
+    {{range .Cart.Items}}
+    <div class="cart-item" id="cart-item-{{.ID}}">
+        <div class="cart-item-info">
+            <h4>{{.ProductName}}</h4>
+            <p class="variant">{{.Strength}} {{.PackSize}}</p>
+            <p class="price">₦{{centsToDollars .PriceCents}} each</p>
+            {{if .RequiresPrescription}}
+            <span class="badge badge-rx">Rx Required</span>
+            {{end}}
+        </div>
+        <div class="cart-item-qty">
+            <form method="post" action="/cart/update/{{.ID}}" hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+                <input type="number" name="quantity" value="{{.Quantity}}" min="1" max="{{.StockQty}}" class="qty-input"
+                       hx-trigger="change" hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+            </form>
+        </div>
+        <div class="cart-item-total">
+            ₦{{centsToDollars (mul .PriceCents .Quantity)}}
+        </div>
+        <div class="cart-item-remove">
+            <form method="post" action="/cart/remove/{{.ID}}" hx-post="/cart/remove/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+            </form>
+        </div>
+    </div>
+    {{end}}
+</div>
+<div class="cart-total">
+    <strong>Total: ₦{{centsToDollars .Cart.TotalCents}}</strong>
+</div>
+<div class="cart-actions">
+    <a href="/checkout" class="btn btn-primary">Proceed to Checkout</a>
+    <a href="/" class="btn btn-secondary">Continue Shopping</a>
+</div>
+{{else}}
+<div class="cart-empty">
+    <p>Your cart is empty.</p>
+    <a href="/" class="btn btn-primary">Start Shopping</a>
+</div>
+{{end}}
+{{end}}

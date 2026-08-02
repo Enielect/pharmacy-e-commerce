@@ -1,0 +1,66 @@
+{{define "content"}}
+<h1>Review Draft #{{.Draft.ID}}</h1>
+<div class="draft-review">
+    <div class="draft-image">
+        <img src="{{imageURL .Draft.ImageKey}}" alt="Draft image">
+    </div>
+    <div class="draft-form">
+        <form method="post" action="/admin/drafts/{{.Draft.ID}}/approve">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Brand</label>
+                <input type="text" name="brand" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Slug</label>
+                <input type="text" name="slug" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category_id" class="form-control" required>
+                    {{range .Categories}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Strength</label>
+                <input type="text" name="strength" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Pack Size</label>
+                <input type="text" name="pack_size" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>SKU</label>
+                <input type="text" name="sku" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Price (cents)</label>
+                <input type="number" name="price_cents" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Stock Qty</label>
+                <input type="number" name="stock_qty" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="requires_prescription">
+                    Requires Prescription
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success">Approve & Create Product</button>
+        </form>
+        <form method="post" action="/admin/drafts/{{.Draft.ID}}/reject" class="inline-form">
+            <button type="submit" class="btn btn-danger">Reject</button>
+        </form>
+    </div>
+</div>
+{{end}}

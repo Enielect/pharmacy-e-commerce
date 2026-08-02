@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="htmx-config" content='{"globalViewTransitions":true}'>
+    <title>{{.Title}} - Pharmacy</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body hx-boost="true" hx-swap="innerHTML transition:true">
+    <header>
+        <nav class="nav">
+            <a href="/" class="nav-logo">Pharmacy</a>
+            <div class="nav-links">
+                <div class="search-box">
+                    <input type="search" name="q" placeholder="Search products..."
+                           hx-get="/search" hx-trigger="keyup changed delay:300ms"
+                           hx-target="#product-grid" hx-swap="innerHTML"
+                           hx-include="[name='category']">
+                </div>
+                {{if .User}}
+                    <span class="nav-user">{{.User.Email}}</span>
+                    {{if or (eq .User.Role "admin") (eq .User.Role "pharmacist")}}
+                        <a href="/admin">Admin</a>
+                    {{end}}
+                    <a href="/orders">Orders</a>
+                    <form method="post" action="/logout" style="display:inline">
+                        <button type="submit" class="btn-link">Logout</button>
+                    </form>
+                {{else}}
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                {{end}}
+                <a href="/cart" class="cart-link" hx-get="/cart/drawer" hx-target="#cart-drawer" hx-swap="innerHTML">
+                    Cart (<span id="cart-count" hx-get="/cart/count" hx-trigger="load, every 30s" hx-swap="innerHTML">{{.CartItemCount}}</span>)
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <div id="cart-overlay" class="cart-overlay" style="display:none"
+         onclick="document.getElementById('cart-drawer').classList.remove('open'); this.style.display='none'">
+    </div>
+    <div id="cart-drawer" class="cart-drawer" style="view-transition-name: cart-drawer;">
+    </div>
+
+    <main id="main-content">
+        {{if .Error}}
+            <div class="alert alert-error">{{.Error}}</div>
+        {{end}}
+        {{if .Success}}
+            <div class="alert alert-success">{{.Success}}</div>
+        {{end}}
+        {{block "content" .}}{{end}}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Pharmacy. All rights reserved.</p>
+    </footer>
+
+    <script>
+      (function () {
+        if (window.__cartDrawerInit) return;
+        window.__cartDrawerInit = true;
+
+        document.body.addEventListener('htmx:afterSwap', function (evt) {
+          if (evt.detail.target && evt.detail.target.id === 'cart-drawer') {
+              document.getElementById('cart-drawer').classList.add('open');
+              document.getElementById('cart-overlay').style.display = 'block';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
