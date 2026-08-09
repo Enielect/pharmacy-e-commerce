@@ -33,7 +33,7 @@
                     <a href="/register">Register</a>
                 {{end}}
                 <a href="/cart" class="cart-link" hx-get="/cart/drawer" hx-target="#cart-drawer" hx-swap="innerHTML">
-                    Cart (<span id="cart-count" hx-get="/cart/count" hx-trigger="load, every 30s" hx-swap="innerHTML">{{.CartItemCount}}</span>)
+                     Cart (<span id="cart-count" hx-swap="innerHTML">{{.CartItemCount}}</span>) 
                 </a>
             </div>
         </nav>
@@ -61,16 +61,16 @@
 
     <script>
       (function () {
-        if (window.__cartDrawerInit) return;
-        window.__cartDrawerInit = true;
-
-        document.body.addEventListener('htmx:afterSwap', function (evt) {
-          if (evt.detail.target && evt.detail.target.id === 'cart-drawer') {
-              document.getElementById('cart-drawer').classList.add('open');
-              document.getElementById('cart-overlay').style.display = 'block';
-          }
-        });
-      })();
+         if (window.__cartDrawerInit) return;
+         window.__cartDrawerInit = true;
+      
+         document.body.addEventListener('htmx:afterSwap', function (evt) {
+           if (evt.detail.target && evt.detail.target.id === 'cart-drawer') {
+               document.getElementById('cart-drawer').classList.add('open');
+               document.getElementById('cart-overlay').style.display = 'block';
+           }
+         });
+       })();
     </script>
   </body>
 </html>
