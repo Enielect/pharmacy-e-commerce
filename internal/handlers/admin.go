@@ -41,11 +41,14 @@ func (h *Handler) AdminDrafts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		drafts = nil
 	}
+	allOrders, _ := h.orderStore.AllOrders("")
 
 	data := struct {
 		PageData
-		Drafts []admin.ProductDraft
-	}{pd, drafts}
+		Drafts     []admin.ProductDraft
+		DraftCount int
+		OrderCount int
+	}{pd, drafts, len(drafts), len(allOrders)}
 	h.render(w, r, "admin_drafts", data)
 }
 
@@ -175,10 +178,11 @@ func (h *Handler) AdminOrderDetail(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		PageData
-		Order         *orders.Order
-		Items         []orders.OrderItem
-		Prescriptions []orders.Prescription
-	}{pd, order, items, prescriptions}
+		Order             *orders.Order
+		Items             []orders.OrderItem
+		NeedsPrescription bool
+		Prescriptions     []orders.Prescription
+	}{pd, order, items, false, prescriptions}
 	data.Title = "Order #" + strconv.FormatInt(orderID, 10)
 	h.render(w, r, "order", data)
 }

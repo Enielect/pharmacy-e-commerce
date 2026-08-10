@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"pharmacy/internal/auth"
 	"pharmacy/internal/cart"
@@ -70,11 +71,16 @@ func (h *Handler) loadTemplates(templatesFS embed.FS) {
 			if key == "" {
 				return "/static/placeholder.svg"
 			}
+			if strings.HasPrefix(key, "http://") || strings.HasPrefix(key, "https://") {
+				return key
+			}
 			return h.imageStore.URL(key)
 		},
 		"add": func(a, b int) int { return a + b },
 		"sub": func(a, b int) int { return a - b },
 		"mul": func(a, b int32) int32 { return a * b },
+		"upper": strings.ToUpper,
+		"lower": strings.ToLower,
 		"seq": func(start, end int) []int {
 			var s []int
 			for i := start; i <= end; i++ {

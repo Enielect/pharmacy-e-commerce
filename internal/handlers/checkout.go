@@ -225,10 +225,11 @@ func (h *Handler) OrderDetail(w http.ResponseWriter, r *http.Request) {
 
 	data := struct {
 		PageData
-		Order         *orders.Order
-		Items         []orders.OrderItem
-		Prescriptions []orders.Prescription
-	}{pd, order, items, prescriptions}
+		Order             *orders.Order
+		Items             []orders.OrderItem
+		NeedsPrescription bool
+		Prescriptions     []orders.Prescription
+	}{pd, order, items, false, prescriptions}
 	data.Title = "Order #" + strconv.FormatInt(orderID, 10)
 	h.render(w, r, "order", data)
 }
