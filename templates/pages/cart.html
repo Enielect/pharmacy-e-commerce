@@ -1,6 +1,74 @@
 {{define "content"}}
-<h1>Shopping Cart</h1>
-<div id="cart-contents">
-    {{template "cart_drawer.html" .}}
+<div class="cart-page">
+    <div class="page-heading">
+        <div>
+            <h1><i data-lucide="shopping-bag" style="width:1.3em;height:1.3em;color:var(--primary);vertical-align:-3px;margin-right:.5rem"></i>Your Cart</h1>
+            <p class="subtitle">{{len .Cart.Items}} item{{if ne (len .Cart.Items) 1}}s{{end}} in your cart</p>
+        </div>
+        <a href="/" class="btn btn-secondary"><i data-lucide="arrow-left"></i> Keep shopping</a>
+    </div>
+
+    {{if .Cart.Items}}
+    <div class="checkout-layout">
+        <div class="card">
+            <h2><i data-lucide="list"></i> Cart items</h2>
+            <div class="cart-items" style="padding:0">
+                {{range .Cart.Items}}
+                <div class="cart-item">
+                    <a href="/products" class="cart-item-thumb">
+                        <img src="/static/placeholder.svg" alt="" aria-hidden="true">
+                    </a>
+                    <div class="cart-item-info">
+                        <h4>{{.ProductName}}</h4>
+                        <p class="variant">{{.Strength}} {{.PackSize}}</p>
+                        <p class="unit-price">₦{{centsToDollars .PriceCents}} each</p>
+                        {{if .RequiresPrescription}}
+                        <span class="badge badge-rx"><i data-lucide="file-medical"></i> Rx</span>
+                        {{end}}
+                    </div>
+                    <div class="cart-item-actions">
+                        <form method="post" action="/cart/update/{{.ID}}">
+                            <div class="qty-stepper">
+                                <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value>1)i.value--;this.form.submit()"><i data-lucide="minus"></i></button>
+                                <input type="number" name="quantity" value="{{.Quantity}}" min="1" max="{{.StockQty}}" onchange="this.form.submit()">
+                                <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value<{{.StockQty}})i.value++;this.form.submit()"><i data-lucide="plus"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="cart-item-total">₦{{centsToDollars (mul .PriceCents .Quantity)}}</div>
+                    <form method="post" action="/cart/remove/{{.ID}}">
+                        <button type="submit" class="icon-btn" title="Remove item"><i data-lucide="trash-2"></i></button>
+                    </form>
+                </div>
+                {{end}}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i data-lucide="receipt"></i> Order summary</h2>
+            <ul class="summary-items">
+                {{range .Cart.Items}}
+                <li>
+                    <span class="name">{{.ProductName}} × {{.Quantity}}</span>
+                    <span class="sum-line">₦{{centsToDollars (mul .PriceCents .Quantity)}}</span>
+                </li>
+                {{end}}
+            </ul>
+            <div class="summary-total">
+                <span>Total</span>
+                <strong>₦{{centsToDollars .Cart.TotalCents}}</strong>
+            </div>
+            <div class="cart-caption" style="margin-top:.75rem"><i data-lucide="truck"></i> Delivery calculated at checkout</div>
+            <a href="/checkout" class="btn btn-primary btn-lg btn-block"><i data-lucide="arrow-right"></i> Proceed to checkout</a>
+        </div>
+    </div>
+    {{else}}
+    <div class="empty-state">
+        <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
+        <h3>Your cart is empty</h3>
+        <p>Browse our catalog and add some essentials.</p>
+        <a href="/" class="btn btn-primary"><i data-lucide="shopping-basket"></i> Start shopping</a>
+    </div>
+    {{end}}
 </div>
 {{end}}

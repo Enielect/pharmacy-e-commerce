@@ -1,20 +1,37 @@
 {{define "content"}}
-<h1>My Orders</h1>
+<div class="page-heading">
+    <div>
+        <h1><i data-lucide="package" style="width:1.3em;height:1.3em;color:var(--primary);vertical-align:-3px;margin-right:.5rem"></i>My Orders</h1>
+        <p class="subtitle">Track and review your purchases.</p>
+    </div>
+    <a href="/" class="btn btn-secondary"><i data-lucide="shopping-basket"></i> Shop more</a>
+</div>
+
 {{if .Orders}}
 <div class="orders-list">
     {{range .Orders}}
     <div class="order-card">
-        <div class="order-header">
-            <span class="order-id">Order #{{.ID}}</span>
-            <span class="order-date">{{.CreatedAt.Format "Jan 02, 2006"}}</span>
-            <span class="order-status status-{{.Status}}">{{.Status}}</span>
-            <span class="order-total">₦{{centsToDollars .TotalCents}}</span>
+        <div class="order-main">
+            <div class="order-id-icon"><i data-lucide="receipt"></i></div>
+            <div>
+                <span class="order-id">Order #{{.ID}}</span>
+                <div class="order-date"><i data-lucide="calendar" style="width:.9em;height:.9em;vertical-align:-1px"></i> {{.CreatedAt.Format "Jan 02, 2006 · 15:04"}}</div>
+            </div>
         </div>
-        <a href="/orders/{{.ID}}" class="btn btn-secondary btn-sm">View Details</a>
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+            <span class="order-total">₦{{centsToDollars .TotalCents}}</span>
+            <span class="status-badge status-{{.Status}}">{{.Status}}</span>
+            <a href="/orders/{{.ID}}" class="btn btn-secondary btn-sm"><i data-lucide="arrow-right"></i> Details</a>
+        </div>
     </div>
     {{end}}
 </div>
 {{else}}
-<p>You have no orders yet. <a href="/">Start shopping</a></p>
+<div class="empty-state">
+    <div class="empty-icon"><i data-lucide="package-open"></i></div>
+    <h3>No orders yet</h3>
+    <p>When you place an order, it will show up here.</p>
+    <a href="/" class="btn btn-primary"><i data-lucide="shopping-basket"></i> Start shopping</a>
+</div>
 {{end}}
 {{end}}

@@ -1,18 +1,34 @@
 {{define "content"}}
-
-<div class="auth-form">
-    <h1>Login</h1>
-    <form method="post" action="/login">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required class="form-control">
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <span class="nav-logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3h8v18H8z"/><path d="M3 8v8"/><path d="M21 8v8"/></svg>
+            </span>
+            <span>PharmCare</span>
         </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-    <p>Don't have an account? <a href="/register">Register</a></p>
+        <h1>Welcome back</h1>
+        <p class="auth-sub">Log in to continue to your pharmacy.</p>
+        <form method="post" action="/login">
+            <div class="form-group">
+                <label>Email address</label>
+                <div class="input-icon">
+                    <i data-lucide="mail"></i>
+                    <input type="email" name="email" required class="form-control" placeholder="you@example.com">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-icon">
+                    <i data-lucide="lock"></i>
+                    <input type="password" name="password" required class="form-control" placeholder="••••••••">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                <i data-lucide="log-in"></i> Log in
+            </button>
+        </form>
+        <p class="auth-switch">New to PharmCare? <a href="/register">Create an account</a></p>
+    </div>
 </div>
 {{end}}

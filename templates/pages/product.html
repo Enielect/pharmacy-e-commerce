@@ -1,38 +1,80 @@
 {{define "content"}}
+<div class="breadcrumb">
+    <a href="/"><i data-lucide="home"></i> Home</a>
+    <i data-lucide="chevron-right"></i>
+    <a href="/?category={{.Product.Category.Slug}}">{{.Product.Category.Name}}</a>
+    <i data-lucide="chevron-right"></i>
+    <span>{{.Product.Name}}</span>
+</div>
+
 <div class="product-detail">
     <div class="product-detail-image">
-        <img src="{{imageURL .Product.PrimaryImageKey}}" alt="{{.Product.Name}}">
+        <img src="{{imageURL .Product.PrimaryImageKey}}" alt="{{.Product.Name}}"
+             onerror="this.onerror=null;this.src='/static/placeholder.svg'">
         {{if .Product.RequiresPrescription}}
-        <div class="badge badge-rx">Requires Prescription</div>
+        <span class="badge badge-rx"><i data-lucide="file-medical"></i> Prescription required</span>
         {{end}}
     </div>
+
     <div class="product-detail-info">
         <h1>{{.Product.Name}}</h1>
         <p class="brand">{{.Product.Brand}}</p>
-        {{if .Product.NafdacRegNumber}}
-        <p class="nafdac">NAFDAC Reg: {{.Product.NafdacRegNumber}}</p>
-        {{end}}
-        <p class="active-ingredient">Active Ingredient: {{.Product.ActiveIngredient}}</p>
+
+        <div class="meta-grid">
+            <div class="meta-chip">
+                <span>Active ingredient</span>
+                <strong>{{.Product.ActiveIngredient}}</strong>
+            </div>
+            <div class="meta-chip">
+                <span>Category</span>
+                <strong>{{.Product.Category.Name}}</strong>
+            </div>
+            {{if .Product.NafdacRegNumber}}
+            <div class="meta-chip">
+                <span>NAFDAC reg</span>
+                <strong>{{.Product.NafdacRegNumber}}</strong>
+            </div>
+            {{end}}
+            {{if .Product.RequiresPrescription}}
+            <div class="meta-chip">
+                <span>Type</span>
+                <strong><span class="badge badge-rx"><i data-lucide="file-medical"></i> Rx</span></strong>
+            </div>
+            {{end}}
+        </div>
+
         <p class="description">{{.Product.Description}}</p>
 
-        <h3>Available Variants</h3>
+        <div class="variant-section-title">
+            <i data-lucide="layers"></i> Available variants
+        </div>
         <div class="variant-list">
             {{range .Product.Variants}}
             <div class="variant-item">
                 <div class="variant-info">
-                    <strong>{{.Strength}} {{.PackSize}}</strong>
-                    <span class="price">₦{{centsToDollars .PriceCents}}</span>
-                    <span class="stock {{if le .StockQty 0}}out-of-stock{{end}}">
-                        {{if le .StockQty 0}}Out of Stock{{else}}{{.StockQty}} in stock{{end}}
+                    <span class="variant-name">{{.Strength}} {{.PackSize}}</span>
+                    {{if .SKU}}<span class="variant-sku">{{.SKU}}</span>{{end}}
+                    <span class="stock {{if le .StockQty 0}}out-of-stock{{else}}in-stock{{end}}">
+                        {{if le .StockQty 0}}Out of stock{{else}}{{.StockQty}} in stock{{end}}
                     </span>
                 </div>
-                {{if gt .StockQty 0}}
-                <form method="post" action="/cart/add" class="add-to-cart-form">
-                    <input type="hidden" name="variant_id" value="{{.ID}}">
-                    <label>Qty: <input type="number" name="quantity" value="1" min="1" max="{{.StockQty}}" class="qty-input"></label>
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
-                </form>
-                {{end}}
+                <div class="variant-meta">
+                    <span class="variant-price">₦{{centsToDollars .PriceCents}}</span>
+                    {{if gt .StockQty 0}}
+                    <form method="post" action="/cart/add" class="add-to-cart-form"
+                          hx-post="/cart/add" hx-target="#cart-drawer" hx-swap="innerHTML">
+                        <input type="hidden" name="variant_id" value="{{.ID}}">
+                        <div class="qty-stepper">
+                            <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value>1)i.value--"><i data-lucide="minus"></i></button>
+                            <input type="number" name="quantity" value="1" min="1" max="{{.StockQty}}">
+                            <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value<{{.StockQty}})i.value++"><i data-lucide="plus"></i></button>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="shopping-cart"></i> Add
+                        </button>
+                    </form>
+                    {{end}}
+                </div>
             </div>
             {{end}}
         </div>

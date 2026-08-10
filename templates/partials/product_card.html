@@ -1,19 +1,38 @@
 {{define "product_card.html"}}
 <div class="product-card">
-    <a href="/products/{{.Slug}}">
+    <a href="/products/{{.Slug}}" class="product-card-link">
         <div class="product-card-image">
-            <img src="{{imageURL .PrimaryImageKey}}" alt="{{.Name}}">
+            <img src="{{imageURL .PrimaryImageKey}}" alt="{{.Name}}" loading="lazy"
+                 onerror="this.onerror=null;this.src='/static/placeholder.svg'">
             {{if .RequiresPrescription}}
-            <span class="badge badge-rx">Rx Required</span>
+            <span class="badge badge-rx"><i data-lucide="file-medical"></i> Rx</span>
             {{end}}
         </div>
         <div class="product-card-body">
+            <span class="product-brand">{{.Brand}}</span>
             <h3>{{.Name}}</h3>
-            <p class="brand">{{.Brand}}</p>
-            {{if .Variants}}
-            <p class="price">From ₦{{centsToDollars (index .Variants 0).PriceCents}}</p>
-            {{end}}
+            {{if .ActiveIngredient}}<p class="product-ingredient">{{.ActiveIngredient}}</p>{{end}}
         </div>
     </a>
+    {{if .Variants}}
+    {{$first := index .Variants 0}}
+    <div class="product-card-footer">
+        <span class="product-price">
+            <span class="from">from </span>₦{{centsToDollars $first.PriceCents}}
+        </span>
+        {{if gt $first.StockQty 0}}
+        <form method="post" action="/cart/add"
+              hx-post="/cart/add" hx-target="#cart-drawer" hx-swap="innerHTML">
+            <input type="hidden" name="variant_id" value="{{$first.ID}}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="quick-add" title="Add to cart">
+                <i data-lucide="plus"></i>
+            </button>
+        </form>
+        {{else}}
+        <span class="stock out-of-stock" style="font-size:0.7rem">Out of stock</span>
+        {{end}}
+    </div>
+    {{end}}
 </div>
 {{end}}

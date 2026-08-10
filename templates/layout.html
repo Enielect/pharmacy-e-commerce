@@ -4,37 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="htmx-config" content='{"globalViewTransitions":true}'>
-    <title>{{.Title}} - Pharmacy</title>
+    <title>{{.Title}} · PharmCare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body hx-boost="true" hx-swap="innerHTML transition:true">
-    <header>
+    <header class="site-header">
         <nav class="nav">
-            <a href="/" class="nav-logo">Pharmacy</a>
-            <div class="nav-links">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3h8v18H8z"/><path d="M3 8v8"/><path d="M21 8v8"/></svg>
+                </span>
+                PharmCare
+            </a>
+            <div class="nav-search">
                 <div class="search-box">
-                    <input type="search" name="q" placeholder="Search products..."
+                    <input type="search" name="q" placeholder="Search medicines, vitamins..."
                            hx-get="/search" hx-trigger="keyup changed delay:300ms"
                            hx-target="#product-grid" hx-swap="innerHTML"
                            hx-include="[name='category']">
                 </div>
+            </div>
+            <div class="nav-links">
                 {{if .User}}
-                    <span class="nav-user">{{.User.Email}}</span>
+                    <button type="button" class="btn-link nav-link" title="Log out" onclick="this.closest('form').submit()">
+                        <form method="post" action="/logout" style="display:none"></form>
+                        Log out
+                    </button>
                     {{if or (eq .User.Role "admin") (eq .User.Role "pharmacist")}}
-                        <a href="/admin">Admin</a>
+                        <a href="/admin" class="nav-link">
+                            <i data-lucide="layout-dashboard"></i> Admin
+                        </a>
                     {{end}}
-                    <a href="/orders">Orders</a>
-                    <form method="post" action="/logout" style="display:inline">
-                        <button type="submit" class="btn-link">Logout</button>
-                    </form>
+                    <a href="/orders" class="nav-link">
+                        <i data-lucide="package"></i> Orders
+                    </a>
+                    <span class="nav-user">
+                        <span class="avatar">{{slice .User.Email 0 1 | upper}}</span>
+                        {{.User.Email}}
+                    </span>
                 {{else}}
-                    <a href="/login">Login</a>
-                    <a href="/register">Register</a>
+                    <a href="/login" class="nav-link">
+                        <i data-lucide="log-in"></i> Log in
+                    </a>
+                    <a href="/register" class="nav-link grow">
+                        <i data-lucide="user-plus"></i> Sign up
+                    </a>
                 {{end}}
-                <a href="/cart" class="cart-link" hx-get="/cart/drawer" hx-target="#cart-drawer" hx-swap="innerHTML">
-                     Cart (<span id="cart-count" hx-swap="innerHTML">{{.CartItemCount}}</span>) 
-                </a>
+                <button type="button" class="cart-button" hx-get="/cart/drawer" hx-target="#cart-drawer" hx-swap="innerHTML">
+                    <i data-lucide="shopping-bag"></i>
+                    <span>Cart</span>
+                    <span id="cart-count" class="cart-count-badge" hx-swap="innerHTML">{{.CartItemCount}}</span>
+                </button>
             </div>
         </nav>
     </header>
@@ -46,29 +71,83 @@
     </div>
 
     <main id="main-content">
-        {{if .Error}}
-            <div class="alert alert-error">{{.Error}}</div>
-        {{end}}
-        {{if .Success}}
-            <div class="alert alert-success">{{.Success}}</div>
-        {{end}}
-        {{block "content" .}}{{end}}
+        <div class="page">
+            {{if .Error}}
+                <div class="alert alert-error">
+                    <i data-lucide="circle-alert"></i> {{.Error}}
+                </div>
+            {{end}}
+            {{if .Success}}
+                <div class="alert alert-success">
+                    <i data-lucide="check-circle-2"></i> {{.Success}}
+                </div>
+            {{end}}
+            {{block "content" .}}{{end}}
+        </div>
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2026 Pharmacy. All rights reserved.</p>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div>
+                <div class="footer-brand">
+                    <span class="nav-logo-mark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3h8v18H8z"/><path d="M3 8v8"/><path d="M21 8v8"/></svg>
+                    </span>
+                    PharmCare
+                </div>
+                <p style="font-size:0.85rem;max-width:36ch;">
+                    Your trusted online pharmacy. Safe, authentic medicines delivered to your door.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <a href="/">All Products</a>
+                <a href="/?category=pain-relief">Pain Relief</a>
+                <a href="/?category=vitamins">Vitamins</a>
+                <a href="/?category=first-aid">First Aid</a>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                {{if .User}}
+                <a href="/orders">My Orders</a>
+                {{else}}
+                <a href="/login">Log in</a>
+                <a href="/register">Sign up</a>
+                {{end}}
+                <a href="/cart">My Cart</a>
+                {{if .User}}
+                {{if or (eq .User.Role "admin") (eq .User.Role "pharmacist")}}
+                <a href="/admin">Admin</a>
+                {{end}}
+                {{end}}
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 PharmCare. All rights reserved.</span>
+            <span>NAFDAC-registered · Trusted care</span>
+        </div>
     </footer>
 
     <script>
       (function () {
          if (window.__cartDrawerInit) return;
          window.__cartDrawerInit = true;
-      
+
+         // Re-render lucide icons whenever htmx swaps content
          document.body.addEventListener('htmx:afterSwap', function (evt) {
-           if (evt.detail.target && evt.detail.target.id === 'cart-drawer') {
-               document.getElementById('cart-drawer').classList.add('open');
-               document.getElementById('cart-overlay').style.display = 'block';
-           }
+             if (typeof lucide !== 'undefined') {
+                 lucide.createIcons();
+             }
+             if (evt.detail.target && evt.detail.target.id === 'cart-drawer') {
+                 var drawer = document.getElementById('cart-drawer');
+                 var overlay = document.getElementById('cart-overlay');
+                 if (drawer) drawer.classList.add('open');
+                 if (overlay) overlay.style.display = 'block';
+             }
+         });
+
+         document.addEventListener('DOMContentLoaded', function () {
+             if (typeof lucide !== 'undefined') lucide.createIcons();
          });
        })();
     </script>

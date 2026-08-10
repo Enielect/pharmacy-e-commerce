@@ -1,44 +1,65 @@
 {{define "cart_drawer.html"}}
+<div class="cart-drawer-header">
+    <h3><i data-lucide="shopping-bag"></i> Your Cart</h3>
+    <button type="button" class="drawer-close"
+            onclick="document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').style.display='none'">
+        <i data-lucide="x"></i>
+    </button>
+</div>
 {{if .Cart.Items}}
 <div class="cart-items">
     {{range .Cart.Items}}
     <div class="cart-item" id="cart-item-{{.ID}}">
+        <div class="cart-item-thumb">
+            <img src="/static/placeholder.svg" alt="" aria-hidden="true">
+        </div>
         <div class="cart-item-info">
             <h4>{{.ProductName}}</h4>
             <p class="variant">{{.Strength}} {{.PackSize}}</p>
-            <p class="price">₦{{centsToDollars .PriceCents}} each</p>
+            <p class="unit-price">₦{{centsToDollars .PriceCents}} each</p>
             {{if .RequiresPrescription}}
-            <span class="badge badge-rx">Rx Required</span>
+            <span class="badge badge-rx"><i data-lucide="file-medical"></i> Rx</span>
             {{end}}
         </div>
-        <div class="cart-item-qty">
-            <form method="post" action="/cart/update/{{.ID}}" hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
-                <input type="number" name="quantity" value="{{.Quantity}}" min="1" max="{{.StockQty}}" class="qty-input"
-                       hx-trigger="change" hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+        <div class="cart-item-actions">
+            <form method="post" action="/cart/update/{{.ID}}"
+                  hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+                <div class="qty-stepper">
+                    <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value>1)i.value--"><i data-lucide="minus"></i></button>
+                    <input type="number" name="quantity" value="{{.Quantity}}" min="1" max="{{.StockQty}}" class="qty-input"
+                           hx-trigger="change" hx-post="/cart/update/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+                    <button type="button" onclick="var i=this.parentNode.querySelector('input');if(i.value<{{.StockQty}})i.value++"><i data-lucide="plus"></i></button>
+                </div>
             </form>
         </div>
-        <div class="cart-item-total">
-            ₦{{centsToDollars (mul .PriceCents .Quantity)}}
-        </div>
-        <div class="cart-item-remove">
-            <form method="post" action="/cart/remove/{{.ID}}" hx-post="/cart/remove/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
-                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-            </form>
-        </div>
+        <div class="cart-item-total">₦{{centsToDollars (mul .PriceCents .Quantity)}}</div>
+        <form method="post" action="/cart/remove/{{.ID}}"
+              hx-post="/cart/remove/{{.ID}}" hx-target="#cart-drawer" hx-swap="innerHTML">
+            <button type="submit" class="icon-btn" title="Remove"><i data-lucide="trash-2"></i></button>
+        </form>
     </div>
     {{end}}
 </div>
-<div class="cart-total">
-    <strong>Total: ₦{{centsToDollars .Cart.TotalCents}}</strong>
-</div>
-<div class="cart-actions">
-    <a href="/checkout" class="btn btn-primary">Proceed to Checkout</a>
-    <a href="/" class="btn btn-secondary">Continue Shopping</a>
+<div class="cart-drawer-footer">
+    <div class="cart-total-row">
+        <span>Subtotal</span>
+        <strong>₦{{centsToDollars .Cart.TotalCents}}</strong>
+    </div>
+    <div class="cart-caption"><i data-lucide="truck"></i> Free delivery on orders over ₦100,000</div>
+    <div class="cart-actions">
+        <a href="/checkout" class="btn btn-primary btn-lg btn-block"><i data-lucide="arrow-right"></i> Proceed to checkout</a>
+        <a href="/" class="btn btn-secondary btn-block"><i data-lucide="arrow-left"></i> Continue shopping</a>
+    </div>
 </div>
 {{else}}
 <div class="cart-empty">
-    <p>Your cart is empty.</p>
-    <a href="/" class="btn btn-primary">Start Shopping</a>
+    <div class="empty-icon"><i data-lucide="shopping-bag"></i></div>
+    <h4>Your cart is empty</h4>
+    <p>Add a few essentials from the catalog.</p>
+    <button type="button" class="btn btn-primary"
+            onclick="document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('cart-overlay').style.display='none'">
+        <i data-lucide="shopping-basket"></i> Go shopping
+    </button>
 </div>
 {{end}}
 {{end}}

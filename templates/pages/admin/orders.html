@@ -1,27 +1,52 @@
 {{define "content"}}
-<h1>Order Management</h1>
-<div class="filter-bar">
-    <a href="/admin/orders" class="btn btn-sm {{if not .Filter}}btn-primary{{else}}btn-secondary{{end}}">All</a>
-    <a href="/admin/orders?status=pending_pharmacist_review" class="btn btn-sm {{if eq .Filter "pending_pharmacist_review"}}btn-primary{{else}}btn-secondary{{end}}">Pending Rx Review</a>
-    <a href="/admin/orders?status=paid" class="btn btn-sm {{if eq .Filter "paid"}}btn-primary{{else}}btn-secondary{{end}}">Paid</a>
-    <a href="/admin/orders?status=processing" class="btn btn-sm {{if eq .Filter "processing"}}btn-primary{{else}}btn-secondary{{end}}">Processing</a>
+<div class="admin-tabs">
+    <a href="/admin" class="admin-tab"><i data-lucide="inbox"></i> Dashboard</a>
+    <a href="/admin/inventory" class="admin-tab"><i data-lucide="boxes"></i> Inventory</a>
+    <a href="/admin/orders" class="admin-tab active"><i data-lucide="package"></i> Orders</a>
 </div>
+
+<div class="catalog-heading">
+    <div>
+        <h1>Order management</h1>
+        <p class="subtitle" style="color:var(--slate-500);font-size:.88rem">Review, update and fulfil customer orders.</p>
+    </div>
+</div>
+
+<div class="filter-bar">
+    <a href="/admin/orders" class="btn {{if not .Filter}}btn-primary{{else}}btn-secondary{{end}} btn-sm">All</a>
+    <a href="/admin/orders?status=pending_pharmacist_review" class="btn {{if eq .Filter "pending_pharmacist_review"}}btn-primary{{else}}btn-secondary{{end}} btn-sm"><i data-lucide="file-medical"></i> Pending Rx</a>
+    <a href="/admin/orders?status=paid" class="btn {{if eq .Filter "paid"}}btn-primary{{else}}btn-secondary{{end}} btn-sm">Paid</a>
+    <a href="/admin/orders?status=processing" class="btn {{if eq .Filter "processing"}}btn-primary{{else}}btn-secondary{{end}} btn-sm">Processing</a>
+    <a href="/admin/orders?status=shipped" class="btn {{if eq .Filter "shipped"}}btn-primary{{else}}btn-secondary{{end}} btn-sm">Shipped</a>
+</div>
+
 {{if .Orders}}
-<table class="table">
-    <thead><tr><th>Order #</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-    <tbody>
-        {{range .Orders}}
-        <tr>
-            <td>#{{.ID}}</td>
-            <td>₦{{centsToDollars .TotalCents}}</td>
-            <td><span class="status-badge status-{{.Status}}">{{.Status}}</span></td>
-            <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
-            <td><a href="/admin/orders/{{.ID}}" class="btn btn-secondary btn-sm">View</a></td>
-        </tr>
-        {{end}}
-    </tbody>
-</table>
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th style="text-align:right">Actions</th></tr>
+        </thead>
+        <tbody>
+            {{range .Orders}}
+            <tr>
+                <td><strong>#{{.ID}}</strong></td>
+                <td><span class="muted" style="font-size:.85rem">User #{{.UserID}}</span></td>
+                <td>₦{{centsToDollars .TotalCents}}</td>
+                <td><span class="status-badge status-{{.Status}}">{{.Status}}</span></td>
+                <td>{{.CreatedAt.Format "Jan 02, 2006"}}</td>
+                <td style="text-align:right">
+                    <a href="/admin/orders/{{.ID}}" class="btn btn-secondary btn-sm"><i data-lucide="eye"></i> View</a>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
 {{else}}
-<p>No orders found.</p>
+<div class="empty-state">
+    <div class="empty-icon"><i data-lucide="package"></i></div>
+    <h3>No orders found</h3>
+    <p>Orders matching this filter will appear here.</p>
+</div>
 {{end}}
 {{end}}

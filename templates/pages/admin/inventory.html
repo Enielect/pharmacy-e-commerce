@@ -1,30 +1,49 @@
 {{define "content"}}
-<h1>Inventory Management</h1>
-<table class="table">
-    <thead>
-        <tr><th>Product</th><th>Variant</th><th>SKU</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
-    </thead>
-    <tbody>
-        {{range $product := .Result.Products}}
-        {{range $product.Variants}}
-        <tr>
-            <td>{{$product.Name}}</td>
-            <td>{{.Strength}} {{.PackSize}}</td>
-            <td>{{.SKU}}</td>
-            <td>₦{{centsToDollars .PriceCents}}</td>
-            <td>{{.StockQty}}</td>
-            <td>
-                <form method="post" action="/admin/inventory/{{.ID}}" class="inline-form">
-                    <input type="number" name="price_cents" value="{{.PriceCents}}" class="form-control" style="width:80px">
-                    <input type="number" name="stock_qty" value="{{.StockQty}}" class="form-control" style="width:80px">
-                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                </form>
-            </td>
-        </tr>
-        {{end}}
-        {{else}}
-        <tr><td colspan="6">No products found.</td></tr>
-        {{end}}
-    </tbody>
-</table>
+<div class="admin-tabs">
+    <a href="/admin" class="admin-tab"><i data-lucide="inbox"></i> Dashboard</a>
+    <a href="/admin/inventory" class="admin-tab active"><i data-lucide="boxes"></i> Inventory</a>
+    <a href="/admin/orders" class="admin-tab"><i data-lucide="package"></i> Orders</a>
+</div>
+
+<div class="catalog-heading">
+    <div>
+        <h1>Inventory management</h1>
+        <p class="subtitle" style="color:var(--slate-500);font-size:.88rem">Update stock levels and prices per product variant.</p>
+    </div>
+    <span class="count">{{.Result.TotalCount}} products</span>
+</div>
+
+<div class="table-wrap">
+    <table class="table">
+        <thead>
+            <tr><th>Product</th><th>Variant</th><th>SKU</th><th>Price</th><th>Stock</th><th style="text-align:right">Actions</th></tr>
+        </thead>
+        <tbody>
+            {{range $product := .Result.Products}}
+            {{range $product.Variants}}
+            <tr>
+                <td><strong>{{$product.Name}}</strong></td>
+                <td>{{.Strength}} {{.PackSize}}</td>
+                <td><code style="font-size:.75rem;color:var(--slate-500)">{{.SKU}}</code></td>
+                <td>₦{{centsToDollars .PriceCents}}</td>
+                <td>
+                    {{if le .StockQty 0}}<span class="stock out-of-stock">Out of stock</span>
+                    {{else if le .StockQty 10}}<span class="stock in-stock" style="color:var(--warning)">Low — {{.StockQty}}</span>
+                    {{else}}<span class="stock in-stock">{{.StockQty}}</span>{{end}}
+                </td>
+                <td style="text-align:right">
+                    <form method="post" action="/admin/inventory/{{.ID}}" class="inline-form" style="display:inline-flex;gap:.4rem">
+                        <input type="number" name="price_cents" value="{{.PriceCents}}" class="form-control" style="width:90px" title="Price in kobo">
+                        <input type="number" name="stock_qty" value="{{.StockQty}}" class="form-control" style="width:80px" title="Stock">
+                        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="save"></i> Save</button>
+                    </form>
+                </td>
+            </tr>
+            {{end}}
+            {{else}}
+            <tr><td colspan="6" style="text-align:center;color:var(--slate-500)">No products found.</td></tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
 {{end}}

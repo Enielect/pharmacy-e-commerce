@@ -1,65 +1,94 @@
 {{define "content"}}
-<h1>Review Draft #{{.Draft.ID}}</h1>
+<div class="admin-tabs">
+    <a href="/admin" class="admin-tab"><i data-lucide="inbox"></i> Dashboard</a>
+    <a href="/admin/inventory" class="admin-tab"><i data-lucide="boxes"></i> Inventory</a>
+    <a href="/admin/orders" class="admin-tab"><i data-lucide="package"></i> Orders</a>
+</div>
+
+<div class="catalog-heading">
+    <div>
+        <h1>Review draft #{{.Draft.ID}}</h1>
+        <p class="subtitle" style="color:var(--slate-500);font-size:.88rem">Fill in catalog details to promote this draft to a live product.</p>
+    </div>
+    <span class="status-badge status-{{.Draft.Status}}">{{.Draft.Status}}</span>
+</div>
+
 <div class="draft-review">
     <div class="draft-image">
-        <img src="{{imageURL .Draft.ImageKey}}" alt="Draft image">
+        <img src="{{imageURL .Draft.ImageKey}}" alt="Draft image" onerror="this.onerror=null;this.src='/static/placeholder.svg'">
+        <p class="muted" style="font-size:.8rem;margin-top:.75rem">Source image for this draft</p>
     </div>
     <div class="draft-form">
-        <form method="post" action="/admin/drafts/{{.Draft.ID}}/approve">
-            <div class="form-group">
-                <label>Product Name</label>
-                <input type="text" name="name" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>Brand</label>
-                <input type="text" name="brand" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Slug</label>
-                <input type="text" name="slug" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select name="category_id" class="form-control" required>
-                    {{range .Categories}}
-                    <option value="{{.ID}}">{{.Name}}</option>
-                    {{end}}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" class="form-control"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Strength</label>
-                <input type="text" name="strength" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Pack Size</label>
-                <input type="text" name="pack_size" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>SKU</label>
-                <input type="text" name="sku" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>Price (cents)</label>
-                <input type="number" name="price_cents" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>Stock Qty</label>
-                <input type="number" name="stock_qty" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="requires_prescription">
-                    Requires Prescription
-                </label>
-            </div>
-            <button type="submit" class="btn btn-success">Approve & Create Product</button>
-        </form>
+        <div class="card">
+            <h2><i data-lucide="package-plus"></i> Product details</h2>
+            <form method="post" action="/admin/drafts/{{.Draft.ID}}/approve">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product name</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <input type="text" name="brand" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" name="slug" class="form-control" required placeholder="e.g. penadol-500">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="category_id" class="form-control" required>
+                            {{range .Categories}}
+                            <option value="{{.ID}}">{{.Name}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Strength</label>
+                        <input type="text" name="strength" class="form-control" placeholder="e.g. 500mg">
+                    </div>
+                    <div class="form-group">
+                        <label>Pack size</label>
+                        <input type="text" name="pack_size" class="form-control" placeholder="e.g. 100 tablets">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SKU</label>
+                        <input type="text" name="sku" class="form-control" required placeholder="e.g. PEN-500-100">
+                    </div>
+                    <div class="form-group">
+                        <label>Price (in kobo)</label>
+                        <input type="number" name="price_cents" class="form-control" required placeholder="e.g. 15000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock quantity</label>
+                        <input type="number" name="stock_qty" class="form-control" required placeholder="e.g. 50">
+                    </div>
+                    <div class="form-group" style="display:flex;align-items:flex-end">
+                        <label class="check">
+                            <input type="checkbox" name="requires_prescription">
+                            Requires prescription
+                        </label>
+                    </div>
+                </div>
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                    <button type="submit" class="btn btn-success btn-lg"><i data-lucide="check-check"></i> Approve &amp; create product</button>
+                </div>
+            </form>
+        </div>
         <form method="post" action="/admin/drafts/{{.Draft.ID}}/reject" class="inline-form">
-            <button type="submit" class="btn btn-danger">Reject</button>
+            <button type="submit" class="btn btn-outline"><i data-lucide="x-circle"></i> Reject draft</button>
         </form>
     </div>
 </div>

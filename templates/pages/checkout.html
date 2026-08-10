@@ -1,42 +1,74 @@
 {{define "content"}}
-<h1>Checkout</h1>
+<div class="checkout-header">
+    <h1>Checkout</h1>
+    <p class="subtitle" style="color:var(--slate-500);font-size:.9rem">Almost there — confirm your delivery details.</p>
+    <div class="steps">
+        <span class="step active"><span class="step-num"><i data-lucide="shopping-bag" style="width:14px;height:14px"></i></span> Cart</span>
+        <span class="step-sep"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></span>
+        <span class="step active"><span class="step-num"><i data-lucide="map-pin" style="width:14px;height:14px"></i></span> Details</span>
+        <span class="step-sep"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></span>
+        <span class="step"><span class="step-num">3</span> Payment</span>
+    </div>
+</div>
+
 <div class="checkout-layout">
-    <div class="checkout-form">
-        <h2>Shipping Address</h2>
+    <div class="card">
+        <h2><i data-lucide="map-pin"></i> Shipping address</h2>
         <form method="post" action="/checkout">
             <div class="form-group">
-                <label>Address Line 1</label>
-                <input type="text" name="address_line1" required class="form-control">
+                <label>Address line 1</label>
+                <div class="input-icon">
+                    <i data-lucide="home"></i>
+                    <input type="text" name="address_line1" required class="form-control" placeholder="e.g. 12 Herbert Macaulay Way">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>City</label>
+                    <div class="input-icon">
+                        <i data-lucide="map"></i>
+                        <input type="text" name="address_city" required class="form-control" placeholder="e.g. Lagos">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <div class="input-icon">
+                        <i data-lucide="map-pin"></i>
+                        <input type="text" name="address_state" required class="form-control" placeholder="e.g. Lagos">
+                    </div>
+                </div>
             </div>
             <div class="form-group">
-                <label>City</label>
-                <input type="text" name="address_city" required class="form-control">
+                <label>Phone number</label>
+                <div class="input-icon">
+                    <i data-lucide="phone"></i>
+                    <input type="tel" name="address_phone" class="form-control" placeholder="e.g. 0801 234 5678">
+                </div>
             </div>
-            <div class="form-group">
-                <label>State</label>
-                <input type="text" name="address_state" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" name="address_phone" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Place Order</button>
+            <button type="submit" class="btn btn-primary btn-lg mt-2">
+                <i data-lucide="shield-check"></i> Place order
+            </button>
         </form>
     </div>
-    <div class="checkout-summary">
-        <h2>Order Summary</h2>
+
+    <div class="card">
+        <h2><i data-lucide="receipt"></i> Order summary</h2>
         {{if .Cart.Items}}
         <ul class="summary-items">
             {{range .Cart.Items}}
             <li>
-                <span>{{.ProductName}} - {{.Strength}} {{.PackSize}} x{{.Quantity}}</span>
-                <span>₦{{centsToDollars (mul .PriceCents .Quantity)}}</span>
+                <span class="name">{{.ProductName}} — {{.Strength}} {{.PackSize}} × {{.Quantity}}</span>
+                <span class="sum-line">₦{{centsToDollars (mul .PriceCents .Quantity)}}</span>
             </li>
             {{end}}
         </ul>
         <div class="summary-total">
-            <strong>Total: ₦{{centsToDollars .Cart.TotalCents}}</strong>
+            <span>Total</span>
+            <strong>₦{{centsToDollars .Cart.TotalCents}}</strong>
         </div>
+        <div class="cart-caption" style="margin-top:.75rem"><i data-lucide="lock"></i> Secure checkout · You won't be charged yet</div>
+        {{else}}
+        <p class="muted">Your cart is empty.</p>
         {{end}}
     </div>
 </div>

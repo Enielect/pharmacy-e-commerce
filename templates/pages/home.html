@@ -1,19 +1,50 @@
 {{define "content"}}
-<div class="catalog-layout">
+<section class="hero">
+    <div class="hero-inner">
+        <span class="hero-eyebrow">
+            <i data-lucide="shield-check"></i> NAFDAC-registered &amp; pharmacist approved
+        </span>
+        <h1>Your health, delivered with <span>care.</span></h1>
+        <p>Shop genuine medicines, vitamins and everyday wellness essentials — reviewed by licensed pharmacists and delivered safely to your doorstep.</p>
+        <div class="hero-cta">
+            <a href="#shop" class="btn btn-lg">
+                <i data-lucide="shopping-basket"></i> Start shopping
+            </a>
+            <a href="/?category=vitamins" class="btn btn-lg btn-outline">
+                <i data-lucide="sparkles"></i> Explore vitamins
+            </a>
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat"><strong>1,000+</strong><span>Products</span></div>
+        <div class="hero-stat"><strong>24h</strong><span>Delivery</span></div>
+        <div class="hero-stat"><strong>100%</strong><span>NAFDAC certified</span></div>
+    </div>
+</section>
+
+{{if .Result}}
+<div class="catalog-layout" id="shop">
     <aside class="sidebar">
-        <h3>Categories</h3>
+        <div class="sidebar-heading">
+            <i data-lucide="filter"></i> Categories
+        </div>
         <ul class="category-list">
-            <li><a href="/" class="{{if not .Category}}active{{end}}">All</a></li>
+            <li><a href="/" class="{{if not .Category}}active{{end}}"><span>All Products</span><span class="cat-dot"></span></a></li>
             {{range .Categories}}
-            <li><a href="/?category={{.Slug}}" class="{{if eq $.Category .Slug}}active{{end}}">{{.Name}}</a></li>
+            <li><a href="/?category={{.Slug}}" class="{{if eq $.Category .Slug}}active{{end}}"><span>{{.Name}}</span><span class="cat-dot"></span></a></li>
             {{end}}
         </ul>
     </aside>
+
     <div class="catalog-main">
-        <h1>{{if .Query}}Search: "{{.Query}}"{{else}}All Products{{end}}</h1>
+        <div class="catalog-heading">
+            <h1>{{if .Query}}Results for "{{.Query}}"{{else}}Shop Products{{end}}</h1>
+            <span class="count">{{.Result.TotalCount}} item{{if ne .Result.TotalCount 1}}s{{end}}</span>
+        </div>
         <div id="product-grid">
             {{template "product_grid.html" .}}
         </div>
     </div>
 </div>
+{{end}}
 {{end}}
